@@ -1,16 +1,16 @@
 # Vamana — Workflow Automation Engine
 
-Vamana is a Python-based workflow automation engine designed as a long-term systems project. It executes structured JSON workflows, validates input safely, and provides logging and execution control.
+Vamana is a Python-based workflow automation engine that executes structured JSON workflows step by step.
 
-This project is built as a compounding learning system, evolving across multiple CS50 courses into a full automation platform.
+This project is being built as a long-term systems project, evolving across multiple stages to explore real-world software architecture.
 
 ---
 
 ## Overview
 
-Vamana allows you to define workflows in JSON and execute them step by step.
+Vamana allows workflows to be defined in JSON and executed sequentially.
 
-Example workflow:
+Example:
 
 ```json
 {
@@ -18,12 +18,12 @@ Example workflow:
   "steps": [
     { "type": "print", "message": "Hello, World!" },
     { "type": "wait", "seconds": 2 },
-    { "type": "write_file", "path": "output.txt", "content": "Done" }
+    { "type": "write_file", "filename": "output.txt", "content": "Done" }
   ]
 }
 ```
 
-Run a workflow:
+Run:
 
 ```bash
 python project.py workflow.json
@@ -33,37 +33,13 @@ python project.py workflow.json
 
 ## Current Features
 
-### Core Engine
-
 - JSON workflow parsing  
 - Step-by-step execution engine  
-- Action-based processing system  
-
-### Supported Actions
-
-- `print` — display messages  
-- `wait` — pause execution  
-- `write_file` — write content to a file  
-- `read_file` — read content from a file  
-
-### Validation System
-
-- Workflow structure validation  
-- Required field checks  
-- Basic type validation  
-- Early malformed input detection  
-
-### Logging System
-
-- Execution logs per step  
-- Error tracking  
-- Workflow run visibility  
-
-### Error Handling
-
-- Graceful failure on invalid steps  
-- Runtime error capture  
-- Debug-friendly output  
+- Action handler system  
+- Validation for workflow and steps  
+- Safe file operations (restricted to workspace)  
+- Execution logging with timestamps  
+- Crash detection and reporting  
 
 ---
 
@@ -71,132 +47,114 @@ python project.py workflow.json
 
 ```text
 1. Load workflow JSON
-2. Validate structure and data
-3. Execute steps sequentially
-4. Log each step and result
-5. Handle errors safely
+2. Validate structure
+3. Validate each step
+4. Execute step using handler mapping
+5. Log progress and results
+6. Print execution summary
 ```
 
 ---
 
-## Architecture (Current)
+## Architecture
 
 ```text
 Parser      → Loads JSON workflows  
 Validator   → Ensures correctness  
-Executor    → Runs steps sequentially  
-Actions     → Handles step logic  
-Logging     → Records execution  
+Executor    → Runs steps  
+Handlers    → Execute actions  
+Logger      → Records execution  
 ```
 
-This version is intentionally simple and serves as the foundation for future expansion.
+---
+
+## Development Journey
+
+Vamana started as a simple idea: a mini workflow engine.
+
+Early attempts failed due to lack of structure and weak validation.
+
+Key turning points:
+
+- Introduced step validation before execution  
+- Replaced if/else chains with handler mapping (`STEP_HANDLERS`)  
+- Added schema-based required fields (`STEP_SCHEMAS`)  
+- Implemented safe file handling to prevent path traversal  
+- Built logging system for debugging and visibility  
+- Added progress tracking and execution summary  
+
+---
+
+## Problems Encountered
+
+- Validation happening too late caused runtime crashes  
+- Weak type checking allowed invalid data (e.g. strings for numbers)  
+- Malformed JSON could break execution  
+- File operations were unsafe before path restrictions  
+- Lack of structure made code harder to extend  
+
+---
+
+## Improvements Made
+
+- Separated validation from execution  
+- Added strict required-field checking per step type  
+- Introduced safe directory enforcement (`workspace/`)  
+- Implemented centralized logging (`system.log`)  
+- Improved error messages for debugging  
+- Cleaned execution flow into clear stages  
 
 ---
 
 ## Known Limitations
 
-This is an early-stage engine and has areas for improvement:
-
-- Validation order can be improved  
-- Weak type enforcement in some actions  
-- Malformed JSON may cause runtime crashes  
-- `wait` action has no upper limit (DoS risk)  
-- File path handling is not sandboxed  
-- Architecture needs modular separation  
-
----
-
-## Planned Features
-
-### Engine Improvements
-
-- Dry-run mode (simulate execution)  
-- Continue-on-error execution  
-- Strong validation layer  
-- Modular action system  
-- Plugin/action registry  
-- Context/state object  
-- Improved logging structure  
-- CLI commands  
-
-### Workflow Features
-
-- Variables  
-- Conditions (if/else)  
-- Loops  
-- Reusable workflows  
-
-### Testing
-
-- Unit testing with pytest  
-- Validation testing  
-- Action-level testing  
+- Type validation is still basic  
+- `wait` has no upper limit (can freeze execution)  
+- No retry or rollback system  
+- No variables or conditions yet  
+- Architecture is still single-file (not modular yet)  
 
 ---
 
 ## Roadmap
 
-Vamana v1 — Python Engine (Completed)
-- Basic workflow execution
-- JSON parsing and validation
-- Logging and error handling
+### Vamana v1 — Python Engine (Completed)
 
-Vamana v2 — Database Layer (In Progress)
-- Store workflows
-- Track execution history
-- Query logs and results
+- Workflow execution  
+- Validation system  
+- Logging and error handling  
 
-Vamana v3 — Web Interface (Planned)
-- Simple dashboard to run workflows
-- View logs and results
+### Vamana v2 — Database Layer (In Progress)
 
-Vamana v4 — Intelligent Features (Future Exploration)
-- Workflow generation from text
-- Error suggestions
----
+- Store workflows  
+- Track execution history  
+- Query logs and runs  
 
-## Philosophy
+### Vamana v3 — Web Interface (Planned)
 
-Vamana is not intended to compete with existing automation platforms.
+- Simple dashboard to run workflows  
+- View logs and results  
 
-It is built as a **systems learning project** focused on:
+### Vamana v4 — Intelligent Features (Future Exploration)
 
-- understanding software architecture  
-- building reliable execution engines  
-- learning validation and error handling  
-- designing scalable systems  
-- practicing real-world engineering patterns  
-
----
-
-## Tech Stack
-
-Current:
-
-- Python  
-- JSON  
-
-Planned:
-
-- SQL database  
-- Backend API  
-- Web interface  
-- AI integrations  
+- Generate workflows from text  
+- Suggest fixes for errors  
 
 ---
 
 ## Project Goal
 
-To evolve Vamana into a full automation system while progressively learning:
+To build a progressively more advanced automation system while learning:
 
-- backend engineering  
-- database systems  
-- web development  
-- AI integration  
-- system design  
+- backend architecture  
+- validation systems  
+- execution engines  
+- database design  
+- full-stack development  
+- system design principles  
 
 ---
 
 ## Author
 
-Built as a long-term systems engineering and learning project.
+Built as a long-term systems engineering project focused on learning by building.
