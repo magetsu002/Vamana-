@@ -1,16 +1,14 @@
 # Vamana — Workflow Automation Engine
 
-Vamana is a Python-based workflow automation engine that executes structured JSON workflows step by step.
+Vamana is a Python-based workflow execution engine that runs structured JSON workflows with strong validation, safety constraints, and detailed logging.
 
-This project is being built as a long-term systems project, evolving across multiple stages to explore real-world software architecture.
+This project is built as a long-term systems project focused on learning real-world software architecture through iteration and improvement.
 
 ---
 
 ## Overview
 
-Vamana allows workflows to be defined in JSON and executed sequentially.
-
-Example:
+Vamana executes workflows defined in JSON:
 
 ```json
 {
@@ -31,27 +29,46 @@ python project.py workflow.json
 
 ---
 
-## Current Features
+## Core Capabilities
 
-- JSON workflow parsing  
-- Step-by-step execution engine  
-- Action handler system  
-- Validation for workflow and steps  
-- Safe file operations (restricted to workspace)  
-- Execution logging with timestamps  
-- Crash detection and reporting  
+### Execution Engine
+- Sequential workflow execution
+- Step handler dispatch system (`STEP_HANDLERS`)
+- Progress tracking during execution
+
+### Validation System
+- Full workflow validation before execution
+- Step-level schema validation (`STEP_SCHEMAS`)
+- Strict type enforcement per field
+- Field length constraints
+- Step count limits
+
+### Safety & Constraints
+- File operations restricted to `workspace/`
+- Path traversal prevention
+- Absolute path blocking
+- Workflow file size limits
+- Maximum step count enforcement
+- Maximum wait duration enforcement
+
+### Logging System
+- Timestamped system logs (`system.log`)
+- Step-by-step execution tracking
+- Crash logging with step context
+- Visual separation between runs
 
 ---
 
-## How It Works
+## Execution Flow
 
 ```text
-1. Load workflow JSON
-2. Validate structure
-3. Validate each step
-4. Execute step using handler mapping
-5. Log progress and results
-6. Print execution summary
+1. Load workflow file
+2. Validate workflow structure
+3. Validate all steps
+4. Execute steps sequentially
+5. Log each step and result
+6. Handle errors and crashes
+7. Output execution summary
 ```
 
 ---
@@ -59,86 +76,70 @@ python project.py workflow.json
 ## Architecture
 
 ```text
-Parser      → Loads JSON workflows  
-Validator   → Ensures correctness  
-Executor    → Runs steps  
-Handlers    → Execute actions  
-Logger      → Records execution  
+Handlers        → Execute step logic
+Schemas         → Define required fields & types
+Validator       → Enforce correctness and limits
+Executor        → Runs steps in order
+Logger          → Tracks system activity
+Safety Layer    → Restricts file access and input size
 ```
 
 ---
 
-## Development Journey
+## Development Progress
 
-Vamana started as a simple idea: a mini workflow engine.
+Vamana evolved from a basic script into a structured engine through iterative improvements.
 
-Early attempts failed due to lack of structure and weak validation.
+### Key Improvements
 
-Key turning points:
-
-- Introduced step validation before execution  
-- Replaced if/else chains with handler mapping (`STEP_HANDLERS`)  
-- Added schema-based required fields (`STEP_SCHEMAS`)  
-- Implemented safe file handling to prevent path traversal  
-- Built logging system for debugging and visibility  
-- Added progress tracking and execution summary  
+- Replaced loose validation with schema-based validation
+- Added strict type checking per field
+- Introduced centralized step handler registry
+- Implemented safe file system boundaries
+- Added execution limits to prevent abuse (DoS scenarios)
+- Built structured logging system for debugging
+- Separated concerns (validation, execution, logging)
 
 ---
 
 ## Problems Encountered
 
-- Validation happening too late caused runtime crashes  
-- Weak type checking allowed invalid data (e.g. strings for numbers)  
-- Malformed JSON could break execution  
-- File operations were unsafe before path restrictions  
-- Lack of structure made code harder to extend  
+- Validation occurring too late caused runtime crashes  
+- Weak type handling allowed invalid data  
+- Unrestricted wait led to potential freezing  
+- File operations were unsafe without constraints  
+- Lack of structure made scaling difficult  
 
 ---
 
-## Improvements Made
+## Current Limitations
 
-- Separated validation from execution  
-- Added strict required-field checking per step type  
-- Introduced safe directory enforcement (`workspace/`)  
-- Implemented centralized logging (`system.log`)  
-- Improved error messages for debugging  
-- Cleaned execution flow into clear stages  
-
----
-
-## Known Limitations
-
-- Type validation is still basic  
-- `wait` has no upper limit (can freeze execution)  
-- No retry or rollback system  
-- No variables or conditions yet  
-- Architecture is still single-file (not modular yet)  
+- No retry or rollback mechanism  
+- No variables or conditional logic  
+- No concurrency support  
+- Still single-file architecture (not modularized yet)  
 
 ---
 
 ## Roadmap
 
-### Vamana v1 — Python Engine (Completed)
+### Vamana v1 — Engine (Completed)
+- Execution system
+- Validation system
+- Logging and safety constraints
 
-- Workflow execution  
-- Validation system  
-- Logging and error handling  
+### Vamana v2 — Persistence (In Progress)
+- Store workflows
+- Track execution history
+- Query logs and runs
 
-### Vamana v2 — Database Layer (In Progress)
+### Vamana v3 — Interface (Planned)
+- CLI expansion
+- Basic dashboard for execution and logs
 
-- Store workflows  
-- Track execution history  
-- Query logs and runs  
-
-### Vamana v3 — Web Interface (Planned)
-
-- Simple dashboard to run workflows  
-- View logs and results  
-
-### Vamana v4 — Intelligent Features (Future Exploration)
-
-- Generate workflows from text  
-- Suggest fixes for errors  
+### Vamana v4 — Intelligent Layer (Future)
+- Workflow generation from text
+- Error analysis and suggestions
 
 ---
 
@@ -146,12 +147,11 @@ Key turning points:
 
 To build a progressively more advanced automation system while learning:
 
-- backend architecture  
+- execution engine design  
 - validation systems  
-- execution engines  
-- database design  
-- full-stack development  
-- system design principles  
+- secure file handling  
+- system constraints and limits  
+- scalable architecture  
 
 ---
 
