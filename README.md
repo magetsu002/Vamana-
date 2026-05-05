@@ -51,19 +51,53 @@ Steps Completed: 3/3
 Status: Workflow ran successfully
 ```
 
-## What it does
+## Example logs
+
+Successful run:
+
+```text
+[2026-05-05 12:52:20] --- Starting Workflow: basic_demo ---
+[2026-05-05 12:52:20] Step 1/3: print
+[2026-05-05 12:52:21] Step 2/3: wait
+[2026-05-05 12:52:21] Step 3/3: print
+[2026-05-05 12:52:21] SUCCESS: Workflow 'basic_demo' finished all 3 steps.
+```
+
+Failed runs:
+
+```text
+[2026-05-04 21:16:32] --- Starting Workflow: Error Test Workflow ---
+[2026-05-04 21:16:32] Step 1/2: print
+[2026-05-04 21:16:32] CRASHED on Step 2: File not found!
+
+[2026-05-04 21:17:45] --- Starting Workflow: Security Test - Path Traversal ---
+[2026-05-04 21:17:45] CRASHED on Step 1: Path traversal is not allowed :<
+```
+
+## Capabilities
 
 - Loads workflows from JSON  
 - Validates everything before execution  
+- Enforces limits to prevent misuse  
 - Executes steps using a handler system  
 - Restricts file access to a safe workspace  
 - Logs execution with timestamps  
 - Detects crashes and reports them  
 
+## Supported steps
+
+```text
+print       → output a message
+wait        → pause execution
+write_file  → create or overwrite a file
+append_file → append content to a file
+read_file   → read file content
+```
+
 ## How it works
 
 ```text
-load → validate → execute → log → summarize
+load → validate → enforce limits → execute → log → summarize
 ```
 
 ## Project structure
@@ -91,6 +125,14 @@ Each part has a clear role:
 - logging records everything  
 - config defines limits and schemas  
 
+## How I built this
+
+The first version of this project worked, but it was fragile.
+
+It didn’t validate input properly, it could crash easily, and file operations weren’t safe.
+
+So instead of adding more features, I focused on fixing those problems and making it reliable first.
+
 ## What went wrong and how I fixed it
 
 ### Execution limits
@@ -105,21 +147,17 @@ Each part has a clear role:
 - Too many steps could overload execution  
   → added a step limit  
 
----
-
 ### Validation issues
 
 - Validation was too weak  
   I was only checking if fields existed  
-  → changed it to enforce both field names and types  
+  → enforced both field names and types  
 
 - Workflow files could be too large  
   → added a file size check before loading  
 
 - Text fields could be abused  
   → added limits on string length  
-
----
 
 ### File safety
 
@@ -136,8 +174,6 @@ Each part has a clear role:
 - The engine could overwrite its own files  
   → blocked protected filenames  
 
----
-
 ### Logging issues
 
 - Logs could be manipulated  
@@ -148,8 +184,6 @@ Each part has a clear role:
 
 - OS errors were inconsistent  
   → converted them into clean error messages  
-
----
 
 ### Structure problems
 
@@ -165,15 +199,32 @@ Each part has a clear role:
 - The project directory got messy  
   → cleaned it using ignore rules  
 
+## Example invalid workflow
+
+```json
+{
+  "name": "invalid_example",
+  "steps": [
+    {
+      "type": "write_file",
+      "filename": "../secret.txt",
+      "content": "hack"
+    }
+  ]
+}
+```
+
+This will be rejected due to path traversal protection.
+
 ## What changed
 
-This went from a simple script into something that:
+This started as a simple script and gradually became more structured.
 
-- validates input properly  
-- enforces limits  
-- prevents unsafe file access  
-- handles edge cases instead of crashing  
-- is structured in a way that can grow  
+- added proper validation before execution  
+- introduced limits to prevent unexpected behavior  
+- restricted file access to a safe workspace  
+- improved handling of edge cases  
+- split the code into separate modules  
 
 ## Current limitation
 
